@@ -67,8 +67,11 @@ export default async function EventPage({
   });
 
   if (!event) return <div className="boho-card p-6">Evento no encontrado.</div>;
-
-  const isOwner = user?.id === event.ownerId;
+  const userIdNum = Number(user?.id);
+  const isOwner =
+    event.ownerId !== null &&
+    !Number.isNaN(userIdNum) &&
+    userIdNum === event.ownerId;
 
   // si es PRIVADO y no es owner, exigir code válido
   if (event.visibility === "PRIVATE" && !isOwner) {
