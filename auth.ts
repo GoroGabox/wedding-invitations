@@ -6,6 +6,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { compare } from "bcryptjs";
 import { Role } from "@prisma/client";
+import type {} from "next-auth";
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -43,7 +44,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
       if (session.user) {
         session.user.id = token.sub as string;
         const role = token.role as Role;
-        if (role) session.user.role = role;
+        if (role) (session.user as unknown as { role?: Role }).role = role;
       }
       return session;
     },
