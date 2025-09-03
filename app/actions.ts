@@ -15,10 +15,11 @@ function nanoId(len = 24) {
   return id;
 }
 
-
 export async function createEvent(formData: FormData) {
   const session = await auth();
   if (!session?.user?.id) throw new Error("No autenticado");
+  const ownerId = Number(session.user.id);
+  if (Number.isNaN(ownerId)) throw new Error("User id inválido (no numérico)");
 
   const title = String(formData.get("title") || "").trim();
   const date = new Date(String(formData.get("date")));
@@ -77,7 +78,7 @@ export async function createEvent(formData: FormData) {
   const event = await prisma.event.create({
     data: {
       title, date, time, venueName, venueAddress, description, slug,
-      ownerId: session.user.id,
+      ownerId,
       mapUrl,
       latitude: latitude ?? undefined,
       longitude: longitude ?? undefined,
