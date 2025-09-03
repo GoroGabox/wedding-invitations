@@ -276,12 +276,13 @@ export async function ensureInviteCode(formData: FormData) {
 
 export async function regenerateInviteCode(formData: FormData) {
   const session = await auth();
-  if (!session?.user?.id) throw new Error("No autenticado");
+  const userId = requireUserId(session?.user?.id);
+  if (!userId) throw new Error("No autenticado");
 
   const guestId = Number(formData.get("guestId"));
   const guest = await prisma.guest.findUnique({ where: { id: guestId }, include: { event: true } });
   if (!guest) throw new Error("Invitado no encontrado");
-  if (guest.event.ownerId !== session.user.id) throw new Error("No autorizado");
+  if (guest.event.ownerId !== userId) throw new Error("No autorizado");
 
   const code = nanoId(28);
   await prisma.guest.update({ where: { id: guestId }, data: { invitationCode: code } });
