@@ -51,7 +51,5 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
     return token;
   },
 },
-
-
   trustHost: true,
 });
