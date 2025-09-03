@@ -2,7 +2,13 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { deleteEvent, requireUserId } from "../actions";
+import { deleteEvent } from "../actions";
+
+function requireUserId(id: number | string | null | undefined) {
+  const n = Number(id);
+  if (!id || Number.isNaN(n)) throw new Error("No autenticado");
+  return n;
+}
 
 export default async function AdminPage() {
   const session = await auth();

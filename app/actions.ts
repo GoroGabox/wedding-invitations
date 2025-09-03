@@ -15,7 +15,7 @@ function nanoId(len = 24) {
   return id;
 }
 
-export function requireUserId(id: number | string | null | undefined) {
+function requireUserId(id: number | string | null | undefined) {
   const n = Number(id);
   if (!id || Number.isNaN(n)) throw new Error("No autenticado");
   return n;
