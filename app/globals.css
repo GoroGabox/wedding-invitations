@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --sand:#EFE7DD;
+  --terracotta:#C36B5E;
+  --sage:#B9C4B1;
+  --clay:#9E6B56;
+  --charcoal:#3E3A39;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: radial-gradient(1200px 800px at 10% -10%, rgba(195,107,94,0.06), transparent),
+  radial-gradient(1000px 600px at 120% 10%, rgba(185,196,177,0.08), transparent),
+  var(--sand);
+  color: var(--charcoal);
+}
+
+
+
+.boho-card{
+  @apply rounded-2xl shadow-sm border;
+  border-color: color-mix(in oklab, var(--charcoal) 10%, transparent);
+  background: color-mix(in oklab, var(--sand) 94%, white 6%);
+}
+
+
+.boho-btn{
+  @apply inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-semibold transition;
+  background: var(--terracotta);
+  color: white;
+}
+.boho-btn:hover{ filter: brightness(0.95); }
+.boho-outline{
+  @apply border px-4 py-2 rounded-xl text-sm font-medium;
+  border-color: color-mix(in oklab, var(--charcoal) 20%, transparent);
+}
+
+
+.boho-h1{ @apply text-4xl md:text-5xl font-semibold; color: var(--clay); }
+.boho-h2{ @apply text-2xl md:text-3xl font-semibold; color: var(--charcoal); }
+.boho-muted{ color: color-mix(in oklab, var(--charcoal) 60%, white); }
+
+
+input, textarea, select{
+  @apply w-full rounded-xl border px-3 py-2 outline-none;
+  border-color: color-mix(in oklab, var(--charcoal) 20%, transparent);
+  background: white;
+}
+label{ @apply text-sm font-medium mb-1 block; }
+.form-row{ @apply grid gap-4 md:grid-cols-2; }
+
+
+/* Decorative divider */
+.boho-divider{ @apply my-8 flex items-center gap-3; }
+.boho-divider::before, .boho-divider::after{
+  content: ""; height:1px; flex:1; background: color-mix(in oklab, var(--charcoal) 25%, transparent);
+}
+
+.chip {
+  @apply inline-flex items-center gap-2 rounded-full border px-3 py-1 bg-white/70;
+}
