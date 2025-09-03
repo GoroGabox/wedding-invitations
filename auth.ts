@@ -5,8 +5,7 @@ import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { compare } from "bcryptjs";
-import type { Session } from "next-auth";
-import type { User } from "next-auth";
+import { Role } from "@prisma/client";
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -34,22 +33,21 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
   ],
 
   callbacks: {
-  async session({ session, token }) {
-    // token.sub siempre es string
-    if (session.user) {
-      session.user.id = token.sub as string;
-      if (typeof token.role === "string") {
-        session.user.role = token.role as any;
+    async jwt({ token, user }) {
+      if (user) {
+        // si en authorize devuelves user.role
+        token.role = user.role;
       }
-    }
-    return session;
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.sub as string;
+        const role = token.role as Role;
+        if (role) session.user.role = role;
+      }
+      return session;
+    },
   },
-  async jwt({ token, user }) {
-    if (user) {
-      token.role = (user as User).role ?? token.role;
-    }
-    return token;
-  },
-},
   trustHost: true,
 });
