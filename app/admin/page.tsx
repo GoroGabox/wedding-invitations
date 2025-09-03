@@ -2,11 +2,11 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { deleteEvent } from "../actions";
+import { deleteEvent, requireUserId } from "../actions";
 
 export default async function AdminPage() {
   const session = await auth();
-  const userId = session?.user?.id;
+  const userId = requireUserId(session?.user?.id);
   const events: {id: number, title: string, date: Date, time: string, venueName: string, venueAddress: string, slug: string}[] = await prisma.event.findMany({
     where: { ownerId: userId ?? 0 },
     orderBy: { date: "asc" },
