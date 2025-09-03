@@ -15,6 +15,13 @@ function nanoId(len = 24) {
   return id;
 }
 
+function requireUserId(id: number | string | null | undefined) {
+  const n = Number(id);
+  if (!id || Number.isNaN(n)) throw new Error("No autenticado");
+  return n;
+}
+
+
 export async function createEvent(formData: FormData) {
   const session = await auth();
   if (!session?.user?.id) throw new Error("No autenticado");
@@ -97,7 +104,7 @@ export async function createEvent(formData: FormData) {
   redirect(`/events/${event.slug}`);
 }
 
-function assertOwner(userId: number | undefined, eventId: number){
+async function assertOwner(userId: number, eventId: number) {
   if (!userId) throw new Error("No autenticado");
   return prisma.event.findUnique({ where: { id: eventId } })
   .then(ev => {
@@ -108,8 +115,9 @@ function assertOwner(userId: number | undefined, eventId: number){
 
 export async function addGift(formData: FormData) {
   const session = await auth();
+  const userId = requireUserId(session?.user?.id);
   const eventId = Number(formData.get("eventId"));
-  await assertOwner(session?.user?.id, eventId);
+  await assertOwner(userId, eventId);
   const name = String(formData.get("name") || "").trim();
   const description = String(formData.get("description") || "").trim();
   const price = formData.get("price") ? Number(formData.get("price")) : null;
@@ -122,8 +130,9 @@ export async function addGift(formData: FormData) {
 
 export async function addGuest(formData: FormData) {
   const session = await auth();
+  const userId = requireUserId(session?.user?.id);
   const eventId = Number(formData.get("eventId"));
-  await assertOwner(session?.user?.id, eventId);
+  await assertOwner(userId, eventId);
   const name = String(formData.get("name") || "").trim();
   const email = String(formData.get("email") || "").trim();
   const plusOnes = Number(formData.get("plusOnes") || 0);
@@ -209,8 +218,9 @@ export async function respondRSVP(formData: FormData) {
 
 export async function deleteEvent(formData: FormData) {
   const session = await auth();
+  const userId = requireUserId(session?.user?.id);
   const eventId = Number(formData.get("eventId"));
-  await assertOwner(session?.user?.id, eventId);
+  await assertOwner(userId, eventId);
   const event = await prisma.event.findUnique({ where: { id: eventId } });
   const slug = event!.slug;
   const gifts = await prisma.gift.findMany({ where: { eventId: eventId } });
@@ -227,16 +237,18 @@ export async function deleteEvent(formData: FormData) {
 
 export async function deleteGuest(formData: FormData) {
   const session = await auth();
+  const userId = requireUserId(session?.user?.id);
   const eventId = Number(formData.get("eventId"));
-  await assertOwner(session?.user?.id, eventId);
+  await assertOwner(userId, eventId);
   const guestId = Number(formData.get("guestId"));
   await prisma.guest.delete({ where: { id: guestId } });
 }
 
 export async function deleteGift(formData: FormData) {
   const session = await auth();
+  const userId = requireUserId(session?.user?.id);
   const eventId = Number(formData.get("eventId"));
-  await assertOwner(session?.user?.id, eventId);
+  await assertOwner(userId, eventId);
   const giftId = Number(formData.get("giftId"));
   await prisma.gift.delete({ where: { id: giftId } });
 }
